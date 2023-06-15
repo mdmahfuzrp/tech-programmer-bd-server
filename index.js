@@ -57,14 +57,27 @@ async function run() {
             res.send(result);
         })
 
-        // Update User Role
+        // Update User Role to Admin
         app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
+            console.log(id);
             const query = { _id: new ObjectId(id) };
-            const replacement = {
-                role: 'admin',
+            const update = {
+                $set: { role: 'admin' },
             };
-            const result = await usersCollection.updateOne(query, replacement);
+            const result = await usersCollection.updateOne(query, update);
+            res.send(result);
+        })
+        
+        // Update User Role to Instructor
+        app.patch('/users/instructor/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) };
+            const update = {
+                $set: { role: 'instructor' },
+            };
+            const result = await usersCollection.updateOne(query, update);
             res.send(result);
         })
 
