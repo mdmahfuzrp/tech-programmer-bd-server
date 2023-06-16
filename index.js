@@ -35,6 +35,7 @@ async function run() {
 
         const usersCollection = client.db("techProgrammerBD").collection("users");
         const classCollection = client.db("techProgrammerBD").collection("classes");
+        const selectedClassCollection = client.db("techProgrammerBD").collection("selectedClasses");
 
         // When signup a new user: store user data in database (usersCollection)
         app.post('/users', async (req, res) => {
@@ -143,7 +144,21 @@ async function run() {
 
         app.get('/instructors', async (req, res) => {
             const query = { role: 'instructor' };
-            const result = await usersCollection.find(query).sort({ students: -1 }).toArray();
+            const result = await usersCollection.find(query).sort({ student: -1 }).toArray();
+            res.send(result);
+        })
+
+        // Get All Approved Classes
+        app.get('/classes/approve', async (req, res) => {
+            const filter = { status: 'Approve' };
+            const result = await classCollection.find(filter).toArray();
+            res.send(result);
+          });
+
+        app.post('/selectedClass', async (req, res)=>{
+            const selectedClass = req.body;
+            console.log(selectedClass);
+            const result = await selectedClassCollection.insertOne(selectedClass);
             res.send(result);
         })
 
