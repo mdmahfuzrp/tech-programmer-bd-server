@@ -69,7 +69,7 @@ async function run() {
             const result = await usersCollection.updateOne(query, update);
             res.send(result);
         })
-        
+
         // Update User Role to Instructor
         app.patch('/users/instructor/:id', async (req, res) => {
             const id = req.params.id;
@@ -92,15 +92,58 @@ async function run() {
         })
 
         // Add A New Class
-        app.post('/classes', async (req, res)=>{
+        app.post('/classes', async (req, res) => {
             const newClass = req.body;
             const result = await classCollection.insertOne(newClass);
             res.send(result);
         })
 
         // Get all classes from database
-        app.get('/classes', async (req, res)=>{
+        app.get('/classes', async (req, res) => {
             const result = await classCollection.find().toArray();
+            res.send(result);
+        })
+
+        // Update Class Status by Admin
+        app.patch('/classes/approve/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) };
+            const update = {
+                $set: { status: 'Approve' },
+            };
+            const result = await classCollection.updateOne(query, update);
+            res.send(result);
+        })
+
+        // Update Class Status by Admin
+        app.patch('/classes/deny/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) };
+            const update = {
+                $set: { status: 'Deny' },
+            };
+            const result = await classCollection.updateOne(query, update);
+            res.send(result);
+        })
+
+        // Update with Insert Feedback by Admin
+        app.patch('/classes/:id', async (req, res) => {
+            const id = req.params.id;
+            const feedback = req.body;
+            console.log(id, feedback);
+            const query = { _id: new ObjectId(id) };
+            const update = {
+                $set: { feedback: feedback },
+            };
+            const result = await classCollection.updateOne(query, update);
+            res.send(result);
+        })
+
+        app.get('/instructors', async (req, res) => {
+            const query = { role: 'instructor' };
+            const result = await usersCollection.find(query).sort({ students: -1 }).toArray();
             res.send(result);
         })
 
