@@ -98,6 +98,13 @@ async function run() {
             res.send(result);
         })
 
+        // Get all classes from database
+        app.get('/classes', async (req, res)=>{
+            const result = await classCollection.find().toArray();
+            res.send(result);
+        })
+
+
         // -----------------MY CODE END----------------
 
 
