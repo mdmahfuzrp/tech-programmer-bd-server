@@ -65,7 +65,7 @@ async function run() {
         // Update User Role to Admin
         app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
-            
+
             const query = { _id: new ObjectId(id) };
             const update = {
                 $set: { role: 'admin' },
@@ -77,7 +77,7 @@ async function run() {
         // Update User Role to Instructor
         app.patch('/users/instructor/:id', async (req, res) => {
             const id = req.params.id;
-            
+
             const query = { _id: new ObjectId(id) };
             const update = {
                 $set: { role: 'instructor' },
@@ -89,7 +89,7 @@ async function run() {
         // Delete User From the Database
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
-            
+
             const query = { _id: new ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
             res.send(result);
@@ -111,7 +111,7 @@ async function run() {
         // Update Class Status by Admin
         app.patch('/classes/approve/:id', async (req, res) => {
             const id = req.params.id;
-            
+
             const query = { _id: new ObjectId(id) };
             const update = {
                 $set: { status: 'Approve' },
@@ -123,7 +123,7 @@ async function run() {
         // Update Class Status by Admin
         app.patch('/classes/deny/:id', async (req, res) => {
             const id = req.params.id;
-            
+
             const query = { _id: new ObjectId(id) };
             const update = {
                 $set: { status: 'Deny' },
@@ -156,7 +156,7 @@ async function run() {
             const result = await usersCollection.find(query).sort({ student: -1 }).toArray();
             res.send(result);
         })
-        
+
 
         app.get('/classes/:email', async (req, res) => {
             const email = req.params.email;
@@ -171,7 +171,7 @@ async function run() {
             const query = { status: 'Approve' };
             const result = await classCollection.find(query);
             res.send(result);
-          });
+        });
 
         app.post('/selectedClass', async (req, res) => {
             const selectedClass = req.body;
