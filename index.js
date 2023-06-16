@@ -34,6 +34,7 @@ async function run() {
         // ----------------MY CODE START---------------
 
         const usersCollection = client.db("techProgrammerBD").collection("users");
+        const classCollection = client.db("techProgrammerBD").collection("classes");
 
         // When signup a new user: store user data in database (usersCollection)
         app.post('/users', async (req, res) => {
@@ -87,6 +88,13 @@ async function run() {
             console.log(id);
             const query = { _id: new ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        // Add A New Class
+        app.post('/classes', async (req, res)=>{
+            const newClass = req.body;
+            const result = await classCollection.insertOne(newClass);
             res.send(result);
         })
 
