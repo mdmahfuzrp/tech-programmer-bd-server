@@ -37,6 +37,8 @@ async function run() {
         const usersCollection = client.db("techProgrammerBD").collection("users");
         const classCollection = client.db("techProgrammerBD").collection("classes");
         const selectedClassCollection = client.db("techProgrammerBD").collection("selectedClasses");
+        const paymentCollection = client.db("techProgrammerBD").collection("payments");
+
 
         // When signup a new user: store user data in database (usersCollection)
         app.post('/users', async (req, res) => {
@@ -63,7 +65,7 @@ async function run() {
         // Update User Role to Admin
         app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
+            
             const query = { _id: new ObjectId(id) };
             const update = {
                 $set: { role: 'admin' },
@@ -75,7 +77,7 @@ async function run() {
         // Update User Role to Instructor
         app.patch('/users/instructor/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
+            
             const query = { _id: new ObjectId(id) };
             const update = {
                 $set: { role: 'instructor' },
@@ -87,7 +89,7 @@ async function run() {
         // Delete User From the Database
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
+            
             const query = { _id: new ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
             res.send(result);
@@ -109,7 +111,7 @@ async function run() {
         // Update Class Status by Admin
         app.patch('/classes/approve/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
+            
             const query = { _id: new ObjectId(id) };
             const update = {
                 $set: { status: 'Approve' },
@@ -121,7 +123,7 @@ async function run() {
         // Update Class Status by Admin
         app.patch('/classes/deny/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
+            
             const query = { _id: new ObjectId(id) };
             const update = {
                 $set: { status: 'Deny' },
@@ -130,18 +132,18 @@ async function run() {
             res.send(result);
         })
 
-        // Update with Insert Feedback by Admin
-        app.patch('/classes/:id', async (req, res) => {
-            const id = req.params.id;
-            const feedback = req.body;
-            console.log(id, feedback);
-            const query = { _id: new ObjectId(id) };
-            const update = {
-                $set: { feedback: feedback },
-            };
-            const result = await classCollection.updateOne(query, update);
-            res.send(result);
-        })
+        // // Update with Insert Feedback by Admin
+        // app.patch('/classes/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const feedback = req.body;
+        //     console.log(id, feedback);
+        //     const query = { _id: new ObjectId(id) };
+        //     const update = {
+        //         $set: { feedback: feedback },
+        //     };
+        //     const result = await classCollection.updateOne(query, update);
+        //     res.send(result);
+        // })
 
         app.get('/instructors', async (req, res) => {
             const query = { role: 'instructor' };
@@ -149,29 +151,36 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/student', async (req, res) => {
+            const query = { role: 'student' };
+            const result = await usersCollection.find(query).sort({ student: -1 }).toArray();
+            res.send(result);
+        })
+        
+
         app.get('/classes/:email', async (req, res) => {
             const email = req.params.email;
             console.log(email);
             const query = { instructorEmail: email };
             const result = await classCollection.find(query).toArray();
             res.send(result);
-          });
+        });
 
         // Get All Approved Classes
         app.get('/classes/approve', async (req, res) => {
-            const filter = { status: 'Approve' };
-            const result = await classCollection.find(filter).toArray();
+            const query = { status: 'Approve' };
+            const result = await classCollection.find(query);
             res.send(result);
           });
 
-        app.post('/selectedClass', async (req, res)=>{
+        app.post('/selectedClass', async (req, res) => {
             const selectedClass = req.body;
             console.log(selectedClass);
             const result = await selectedClassCollection.insertOne(selectedClass);
             res.send(result);
         })
 
-        app.get('/selectedClass', async (req, res)=>{
+        app.get('/selectedClass', async (req, res) => {
             const result = await selectedClassCollection.find().toArray();
             res.send(result);
         })
@@ -184,8 +193,17 @@ async function run() {
             res.send(result);
         })
 
-        app.post('/create-payment-intent', async (req, res)=>{
-            const {price} = req.body;
+        app.delete('/selectedClass', async (req, res) => {
+            try {
+                const result = await selectedClassCollection.deleteMany({});
+                res.send({ deletedCount: result.deletedCount });
+            } catch (error) {
+                res.status(500).send({ error: 'Failed to delete data from selectedClassCollection' });
+            }
+        });
+
+        app.post('/create-payment-intent', async (req, res) => {
+            const { price } = req.body;
             const amount = price * 100;
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: amount,
@@ -195,6 +213,18 @@ async function run() {
             res.send({
                 clientSecret: paymentIntent.client_secret
             })
+        })
+
+        app.post('/payments', async (req, res) => {
+            const payment = req.body;
+            console.log(payment);
+            const result = await paymentCollection.insertOne(payment);
+            res.send(result)
+        })
+
+        app.get('/payments', async (req, res) => {
+            const result = await paymentCollection.find().toArray();
+            res.send(result);
         })
 
         // -----------------MY CODE END----------------
