@@ -98,6 +98,7 @@ async function run() {
         // Add A New Class
         app.post('/classes', async (req, res) => {
             const newClass = req.body;
+            console.log(newClass);
             const result = await classCollection.insertOne(newClass);
             res.send(result);
         })
