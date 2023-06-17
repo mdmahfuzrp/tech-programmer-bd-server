@@ -133,18 +133,18 @@ async function run() {
             res.send(result);
         })
 
-        // // Update with Insert Feedback by Admin
-        // app.patch('/classes/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const feedback = req.body;
-        //     console.log(id, feedback);
-        //     const query = { _id: new ObjectId(id) };
-        //     const update = {
-        //         $set: { feedback: feedback },
-        //     };
-        //     const result = await classCollection.updateOne(query, update);
-        //     res.send(result);
-        // })
+        // Update with Insert Feedback by Admin
+        app.patch('/classes/:id', async (req, res) => {
+            const id = req.params.id;
+            const feedback = req.body;
+            console.log(id, feedback);
+            const query = { _id: new ObjectId(id) };
+            const update = {
+                $set: { feedback: feedback },
+            };
+            const result = await classCollection.updateOne(query, update);
+            res.send(result);
+        })
 
         app.get('/instructors', async (req, res) => {
             const query = { role: 'instructor' };
